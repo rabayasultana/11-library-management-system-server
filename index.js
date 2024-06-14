@@ -1,18 +1,20 @@
+require('dotenv').config();
 const express = require('express')
 const cors = require('cors')
 const { MongoClient, ServerApiVersion } = require('mongodb');
-require('dotenv').config()
-const port = process.env.PORT || 9000
-
 const app = express()
+const port = process.env.PORT || 5000
 
 
-const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
-    credentials: true,
-    optionSuccessStatus: 200,
-}
-app.use(cors(corsOptions))
+// const corsOptions = {
+//     origin: ['http://localhost:5173', 'http://localhost:5174'],
+//     credentials: true,
+//     optionSuccessStatus: 200,
+// }
+// app.use(cors(corsOptions))
+
+// Middleware
+app.use(cors())
 app.use(express.json())
 
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.mwqipy1.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0`;
@@ -29,6 +31,7 @@ const client = new MongoClient(uri, {
     try {
 
         const booksCollection = client.db('library').collection('books')
+        const categoriesCollection = client.db('library').collection('categories')
 
     // Get all jobs data from the db
     app.get('/books', async (req, res)=>{
@@ -40,8 +43,6 @@ const client = new MongoClient(uri, {
       await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
     } finally {
-      // Ensures that the client will close when you finish/error
-    //   await client.close();
     }
   }
   run().catch(console.dir);
