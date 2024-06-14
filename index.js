@@ -30,21 +30,22 @@ const client = new MongoClient(uri, {
   async function run() {
     try {
 
+       const categoriesCollection = client.db('library').collection('categories')
         const booksCollection = client.db('library').collection('books')
-        const categoriesCollection = client.db('library').collection('categories')
+       
 
         // Get all categories data from DB
         app.get('/categories', async (req, res)=>{
-          const result = await categoriesCollection.find().toArray()
+          const categories = await categoriesCollection.find().toArray()
   
-          res.send(result)
+          res.send(categories)
       })
 
     // Get all books data from the db
     app.get('/books', async (req, res)=>{
-        const result = await booksCollection.find().toArray()
+        const books = await booksCollection.find().toArray()
 
-        res.send(result)
+        res.send(books)
     })
       // Send a ping to confirm a successful connection
       await client.db("admin").command({ ping: 1 });
