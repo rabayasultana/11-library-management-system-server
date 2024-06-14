@@ -35,9 +35,9 @@ const client = new MongoClient(uri, {
 
     // Get all jobs data from the db
     app.get('/books', async (req, res)=>{
-        const result = await booksCollection.find().toArray()
+        const books = await booksCollection.find().toArray()
 
-        res.send(result)
+        res.send(books)
     })
       // Send a ping to confirm a successful connection
       await client.db("admin").command({ ping: 1 });
