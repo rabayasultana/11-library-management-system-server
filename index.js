@@ -36,16 +36,16 @@ const client = new MongoClient(uri, {
 
         // Get all categories data from DB
         app.get('/categories', async (req, res)=>{
-          const categories = await categoriesCollection.find().toArray()
+          const result = await categoriesCollection.find().toArray()
   
-          res.send(categories)
+          res.send(result)
       })
 
     // Get all books data from the db
     app.get('/books', async (req, res)=>{
-        const books = await booksCollection.find().toArray()
+        const result = await booksCollection.find().toArray()
 
-        res.send(books)
+        res.send(result)
     })
 
     // Get single book data from db by using book id
@@ -55,6 +55,14 @@ const client = new MongoClient(uri, {
     const result = await booksCollection.findOne(query)
     res.send(result)
    })
+
+  //  save book data in database
+  app.post('/books', async (req, res) => {
+    const newBook = req.body;
+    console.log(newBook);
+    const result = await booksCollection.insertOne(newBook);
+    res.send(result);
+})
 
       // Send a ping to confirm a successful connection
       await client.db("admin").command({ ping: 1 });
