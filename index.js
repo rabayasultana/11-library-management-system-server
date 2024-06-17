@@ -64,6 +64,27 @@ const client = new MongoClient(uri, {
     res.send(result);
 })
 
+// update books in database
+app.put('/books/:id', async(req, res) => {
+  const id = req.params.id;
+  const filter = {_id: new ObjectId(id)}
+  const options = { upsert: true };
+  const updatedBook = req.body;
+
+  const book= {
+      $set: {
+          bookName: updatedBook.craftName,
+          authorName: updatedBook.authorName,
+          category: updatedBook.category,
+          rating: updatedBook.rating, 
+          photo: updatedBook.photo
+      }
+  }
+  const result = await booksCollection.updateOne(filter, book, options);
+  res.send(result);
+})
+
+
       // Send a ping to confirm a successful connection
       await client.db("admin").command({ ping: 1 });
       console.log("Pinged your deployment. You successfully connected to MongoDB!");
