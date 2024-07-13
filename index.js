@@ -32,7 +32,7 @@ const client = new MongoClient(uri, {
 
        const categoriesCollection = client.db('library').collection('categories')
         const booksCollection = client.db('library').collection('books')
-        const BorrowedBooksCollection = client.db('library').collection('borrowedBooks')
+        const borrowedBooksCollection = client.db('library').collection('borrowedBooks')
        
 
         // Get all categories data from DB
@@ -91,9 +91,16 @@ app.put('/books/:id', async(req, res) => {
   app.post('/borrowedBooks', async (req, res) => {
     const borrowedBook = req.body;
     console.log(borrowedBook);
-    const result = await BorrowedBooksCollection.insertOne(borrowedBook);
+    const result = await borrowedBooksCollection.insertOne(borrowedBook);
     res.send(result);
 })
+
+    // Get all borrowed books data from the db
+    app.get('/borrowedBooks', async (req, res)=>{
+      const result = await borrowedBooksCollection.find().toArray()
+
+      res.send(result)
+  })
 
 
 
