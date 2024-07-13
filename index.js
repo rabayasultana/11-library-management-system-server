@@ -32,6 +32,7 @@ const client = new MongoClient(uri, {
 
        const categoriesCollection = client.db('library').collection('categories')
         const booksCollection = client.db('library').collection('books')
+        const BorrowedBooksCollection = client.db('library').collection('borrowedBooks')
        
 
         // Get all categories data from DB
@@ -56,6 +57,7 @@ const client = new MongoClient(uri, {
     res.send(result)
    })
 
+
   //  save book data in database
   app.post('/books', async (req, res) => {
     const newBook = req.body;
@@ -73,16 +75,26 @@ app.put('/books/:id', async(req, res) => {
 
   const book= {
       $set: {
-          bookName: updatedBook.craftName,
-          authorName: updatedBook.authorName,
+          name: updatedBook.bookName,
+          author: updatedBook.authorName,
           category: updatedBook.category,
           rating: updatedBook.rating, 
-          photo: updatedBook.photo
+          image: updatedBook.photo
       }
   }
   const result = await booksCollection.updateOne(filter, book, options);
   res.send(result);
 })
+
+
+  //  save borrowed book data in database
+  app.post('/borrowedBooks', async (req, res) => {
+    const borrowedBook = req.body;
+    console.log(borrowedBook);
+    const result = await BorrowedBooksCollection.insertOne(borrowedBook);
+    res.send(result);
+})
+
 
 
       // Send a ping to confirm a successful connection
