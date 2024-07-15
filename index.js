@@ -60,20 +60,28 @@ async function run() {
     });
 
     // get single book data by using name of book
-    // app.get("/books/name", async (req, res) => {
-    //   const name = req.params.name;
-    //   // console.log(name);
-
-    //   if(req.query.name !== name){
-    //     return res.status(403).send({message: 'forbidden access'})
-    // }
-    // let query = {};
-    // if (req.query?.name) {
-    //   query = { name: req.query.name };
-    // }
-    // const result = await booksCollection.findOne(query);
-    // res.send(result);
+    // app.get("/books/:name", async (req, res) => {
+    //   const { name } = req.params;
+    //   const filter = { name: name };
+    //   const result = await booksCollection.findOne(filter);
+    //   res.send(result);
+    
     // });
+
+    app.get('/books/:name/:id', async (req, res) => {
+      const { name, id } = req.params;
+      const filter = id ? { _id: id } : { name: { $regex: name, $options: 'i' } }; // Use ID or search by name if no ID provided
+      try {
+        const book = await booksCollection.findOne(filter);
+        if (!book) {
+          return res.status(404).send('Book not found');
+        }
+        res.json(book);
+      } catch (error) {
+        console.error(error);
+        res.status(500).send('Internal server error');
+      }
+    });
 
     //  save book data in database
     app.post("/books", async (req, res) => {
@@ -107,6 +115,11 @@ async function run() {
         else if (updatedBook.updateType === "quantity") {
           book = {
             $inc: { quantity: -1 },
+          };
+        } 
+        else if (updatedBook.updateType === "quantityIncrease") {
+          book = {
+            $inc: { quantity: +1 },
           };
         } 
         else {
