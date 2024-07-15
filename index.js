@@ -33,6 +33,9 @@ async function run() {
     const borrowedBooksCollection = client
       .db("library")
       .collection("borrowedBooks");
+      const reviewsCollection = client
+      .db("library")
+      .collection("reviews");
 
     // Get all categories data from DB
     app.get("/categories", async (req, res) => {
@@ -146,6 +149,24 @@ async function run() {
       console.log(result);
       res.send(result);
     });
+
+
+    // add reviews
+    app.post("/review", async (req, res) => {
+      const newReview = req.body;
+      console.log(newReview);
+      const result = await reviewsCollection.insertOne(newReview);
+      res.send(result);
+    });
+
+    // get reviews
+        // Get all books data from the db
+        app.get("/review", async (req, res) => {
+          const result = await reviewsCollection.find().toArray();
+    
+          res.send(result);
+        });
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
