@@ -59,34 +59,14 @@ async function run() {
       res.send(result);
     });
 
-    // get single book data by using name of book
-    // app.get("/books/:name", async (req, res) => {
-    //   const { name } = req.params;
-    //   const filter = { name: name };
-    //   const result = await booksCollection.findOne(filter);
-    //   res.send(result);
-    
-    // });
 
-    app.get('/books/:name/:id', async (req, res) => {
-      const { name, id } = req.params;
-      const filter = id ? { _id: id } : { name: { $regex: name, $options: 'i' } }; // Use ID or search by name if no ID provided
-      try {
-        const book = await booksCollection.findOne(filter);
-        if (!book) {
-          return res.status(404).send('Book not found');
-        }
-        res.json(book);
-      } catch (error) {
-        console.error(error);
-        res.status(500).send('Internal server error');
-      }
-    });
+
+   
 
     //  save book data in database
     app.post("/books", async (req, res) => {
       const newBook = req.body;
-      console.log(newBook);
+      // console.log(newBook);
       const result = await booksCollection.insertOne(newBook);
       res.send(result);
     });
@@ -117,11 +97,11 @@ async function run() {
             $inc: { quantity: -1 },
           };
         } 
-        else if (updatedBook.updateType === "quantityIncrease") {
-          book = {
-            $inc: { quantity: +1 },
-          };
-        } 
+        // else if (updatedBook.updateType === "quantityIncrease") {
+        //   book = {
+        //     $inc: { quantity: +1 },
+        //   };
+        // } 
         else {
           return res.status(400).send({ message: "Invalid update type" }); // Handle invalid updateType
         }
@@ -133,11 +113,27 @@ async function run() {
       
     });
     
+    app.put("/books", async (req, res) => {
+      const {search} = req.query;
+      console.log('name',search);
+      const options = { upsert: true };
+      const updatedBook = req.body;
+      const query = {
+        name: {$regex: search, $options: 'i'}
+    } 
+    const book = {
+      $inc: { quantity: +1 },
+    };
+    // const result = await booksCollection.findOne(query);
+    const result = await booksCollection.updateOne(query, book, options);
+    res.json(result);
+    })
+
 
     //  save borrowed book data in database
     app.post("/borrowedBooks", async (req, res) => {
       const borrowedBook = req.body;
-      console.log(borrowedBook);
+      // console.log(borrowedBook);
       const result = await borrowedBooksCollection.insertOne(borrowedBook);
       res.send(result);
     });
@@ -146,7 +142,7 @@ async function run() {
 
     app.get("/borrowedBooks/:email", async (req, res) => {
       const email = req.params.email;
-      console.log(email);
+      // console.log(email);
       const query = { email: email };
 
       const result = await borrowedBooksCollection.find(query).toArray();
@@ -159,7 +155,7 @@ async function run() {
       const id = req.params.id;
       const query = { _id: new ObjectId(id) };
       const result = await borrowedBooksCollection.deleteOne(query);
-      console.log(result);
+      // console.log(result);
       res.send(result);
     });
 
@@ -167,7 +163,7 @@ async function run() {
     // add reviews
     app.post("/review", async (req, res) => {
       const newReview = req.body;
-      console.log(newReview);
+      // console.log(newReview);
       const result = await reviewsCollection.insertOne(newReview);
       res.send(result);
     });
